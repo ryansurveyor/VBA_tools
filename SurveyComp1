@@ -1,0 +1,200 @@
+' My first VBA project, heavily modified from the following code:
+' https://support.microsoft.com/en-us/help/213449/how-to-convert-degrees-minutes-seconds-angles-to-or-from-decimal-angle
+' Ryan Prasad 6/9/19 rhprasad@outlook.com
+
+Function Add_Angles(A As String, B As String) As String
+
+   ' Pass in two DMS angles as arguments, A and B
+   ' Declare the variables to be Integers
+   Dim degreesA As Integer
+   Dim minutesA As Integer
+   Dim secondsA As Integer
+   Dim degreesB As Integer
+   Dim minutesB As Integer
+   Dim secondsB As Integer
+   Dim degreesSum As Integer
+   Dim minutesSum As Integer
+   Dim secondsSum As Integer
+   
+   ' Set degree to value before "°" of Argument Passed.
+   degreesA = Val(Left(A, InStr(1, A, "°") - 1))
+   degreesB = Val(Left(B, InStr(1, B, "°") - 1))
+   
+   ' Set minutes to the value between the "°" and the "'"
+   
+   minutesA = Val(Mid(A, InStr(1, A, "°") + 2, _
+             InStr(1, A, "'") - InStr(1, A, _
+             "°") - 2))
+   minutesB = Val(Mid(B, InStr(1, B, "°") + 2, _
+             InStr(1, B, "'") - InStr(1, B, _
+             "°") - 2))
+             
+    ' Set seconds to the number to the right of "'"
+    secondsA = Val(Mid(A, InStr(1, A, "'") + _
+            2, Len(A) - InStr(1, A, "'") - 2))
+    secondsB = Val(Mid(B, InStr(1, B, "'") + _
+            2, Len(B) - InStr(1, B, "'") - 2))
+            
+    ' Compute sum
+    If secondsA + secondsB > 60 Then
+        minutesSum = 1
+        secondsSum = -60
+    End If
+    If minutesSum + minutesA + minutesB > 60 Then
+        degreesSum = 1
+        minutesSum = minutesSum - 60
+    End If
+    If degreesSum + degreesA + degreesB > 360 Then
+        degreesSum = degreesSum - 360
+    End If
+    
+    secondsSum = secondsSum + secondsA + secondsB
+    minutesSum = minutesSum + minutesA + minutesB
+    degreesSum = degreesSum + degreesA + degreesB
+    
+   Add_Angles = degreesSum & "° " & minutesSum & "' " & secondsSum & Chr(34)
+End Function
+
+
+
+' SUBTRACT ANGLES
+Function Subtract_Angles(A As String, B As String) As String
+
+   ' Pass in two DMS angles as arguments, A and B
+   ' Declare the variables to be Integers
+   Dim degreesA As Integer
+   Dim minutesA As Integer
+   Dim secondsA As Integer
+   Dim degreesB As Integer
+   Dim minutesB As Integer
+   Dim secondsB As Integer
+   Dim degreesDiff As Integer
+   Dim minutesDiff As Integer
+   Dim secondsDiff As Integer
+   
+   ' Set degree to value before "°" of Argument Passed.
+   degreesA = Val(Left(A, InStr(1, A, "°") - 1))
+   degreesB = Val(Left(B, InStr(1, B, "°") - 1))
+   
+   ' Set minutes to the value between the "°" and the "'"
+   
+   minutesA = Val(Mid(A, InStr(1, A, "°") + 2, _
+             InStr(1, A, "'") - InStr(1, A, _
+             "°") - 2))
+   minutesB = Val(Mid(B, InStr(1, B, "°") + 2, _
+             InStr(1, B, "'") - InStr(1, B, _
+             "°") - 2))
+             
+    ' Set seconds to the number to the right of "'"
+    secondsA = Val(Mid(A, InStr(1, A, "'") + _
+            2, Len(A) - InStr(1, A, "'") - 2))
+    secondsB = Val(Mid(B, InStr(1, B, "'") + _
+            2, Len(B) - InStr(1, B, "'") - 2))
+            
+    ' Compute difference
+    If secondsA - secondsB < 0 Then
+        minutesDiff = -1
+        secondsDiff = 60
+    End If
+    If minutesDiff + minutesA - minutesB < 0 Then
+        degreesDiff = -1
+        minutesDiff = minutesDiff + 60
+    End If
+    If degreesDiff + degreesA - degreesB < 0 Then
+        degreesDiff = degreesDiff + 360
+    End If
+
+    secondsDiff = secondsDiff + secondsA - secondsB
+    minutesDiff = minutesDiff + minutesA - minutesB
+    degreesDiff = degreesDiff + degreesA - degreesB
+
+    Subtract_Angles = degreesDiff & "° " & minutesDiff & "' " & secondsDiff & Chr(34)
+End Function
+
+
+Function Sin_DMS(A As String) As Double
+
+   Dim degrees As Integer
+   Dim minutes As Integer
+   Dim seconds As Integer
+   Dim convert As Double
+   
+   ' Set degree to value before "°" of Argument Passed.
+   degrees = Val(Left(A, InStr(1, A, "°") - 1))
+   
+   ' Set minutes to the value between the "°" and the "'"
+   
+   minutes = Val(Mid(A, InStr(1, A, "°") + 2, _
+             InStr(1, A, "'") - InStr(1, A, _
+             "°") - 2))
+             
+    ' Set seconds to the number to the right of "'"
+    seconds = Val(Mid(A, InStr(1, A, "'") + _
+            2, Len(A) - InStr(1, A, "'") - 2))
+
+            
+    ' Compute sin
+   convert = Sin(((degrees + (minutes / 60) + (seconds / 3600)) * WorksheetFunction.Pi) / 180)
+    
+   Sin_DMS = convert
+   
+End Function
+
+
+
+Function Cos_DMS(A As String) As Double
+
+   Dim degrees As Integer
+   Dim minutes As Integer
+   Dim seconds As Integer
+   Dim convert As Double
+   
+   ' Set degree to value before "°" of Argument Passed.
+   degrees = Val(Left(A, InStr(1, A, "°") - 1))
+   
+   ' Set minutes to the value between the "°" and the "'"
+   
+   minutes = Val(Mid(A, InStr(1, A, "°") + 2, _
+             InStr(1, A, "'") - InStr(1, A, _
+             "°") - 2))
+             
+    ' Set seconds to the number to the right of "'"
+    seconds = Val(Mid(A, InStr(1, A, "'") + _
+            2, Len(A) - InStr(1, A, "'") - 2))
+
+            
+    ' Compute cos
+   convert = Cos(((degrees + (minutes / 60) + (seconds / 3600)) * WorksheetFunction.Pi) / 180)
+    
+   Cos_DMS = convert
+   
+End Function
+
+
+Function Tan_DMS(A As String) As Double
+
+   Dim degrees As Integer
+   Dim minutes As Integer
+   Dim seconds As Integer
+   Dim convert As Double
+   
+   ' Set degree to value before "°" of Argument Passed.
+   degrees = Val(Left(A, InStr(1, A, "°") - 1))
+   
+   ' Set minutes to the value between the "°" and the "'"
+   
+   minutes = Val(Mid(A, InStr(1, A, "°") + 2, _
+             InStr(1, A, "'") - InStr(1, A, _
+             "°") - 2))
+             
+    ' Set seconds to the number to the right of "'"
+    seconds = Val(Mid(A, InStr(1, A, "'") + _
+            2, Len(A) - InStr(1, A, "'") - 2))
+
+            
+    ' Compute tan
+   convert = Tan(((degrees + (minutes / 60) + (seconds / 3600)) * WorksheetFunction.Pi) / 180)
+    
+   Tan_DMS = convert
+   
+End Function
